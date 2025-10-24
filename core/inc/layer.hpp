@@ -10,7 +10,7 @@ enum class Activation {
     Sigmoid,
     Tanh,
     Softmax,
-    Linear
+    // Linear
 };
 
 class Layer{

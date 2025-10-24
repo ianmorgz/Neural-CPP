@@ -19,7 +19,7 @@ public:
     void loadModel(const std::string& filepath);
 private: 
     std::vector<std::unique_ptr<Layer>> layers_;
-    Tensor last_input_;
+    Tensor last_output_;
 };
 
 std::unique_ptr<NeuralNetwork> createNeuralNetwork();

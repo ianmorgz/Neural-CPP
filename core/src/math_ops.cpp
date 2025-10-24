@@ -1,4 +1,4 @@
-#include "inc/tensor.hpp"
+#include "../inc/tensor.hpp"
 #include <cmath>
 #include <random>
 #include <stdexcept>
@@ -87,22 +87,7 @@ void tanh(Tensor& x){
 }
 
 void softmax(Tensor& x){
-    float max_val = x[0];
-    for(size_t i = 1; i < x.size(); ++i){
-        if(x[i] > max_val){
-            max_val = x[i];
-        }
-    }
-
-    float sum = 0.0f;
-    for(size_t i = 0; i < x.size(); ++i){
-        x[i] = std::exp(x[i] - max_val); // for numerical stability
-        sum += x[i];
-    }
-
-    for(size_t i = 0; i < x.size(); ++i){
-        x[i] /= sum;
-    }
+    throw std::runtime_error("Softmax derivative not implemented.");
 }
 
 void relu_derivative(Tensor& x){
@@ -125,9 +110,10 @@ void tanh_derivative(Tensor& x){
 }
 
 void softmax_derivative(Tensor& x){
-    throw std::exception("Softmax and it's derivative have not been implemented yet.");
+    throw std::runtime_error("Softmax derivative not implemented.");
 }
 
+// --- loss functions ---
 float mse_loss(const Tensor& predictions, const Tensor& targets){
     if(predictions.shape() != targets.shape()){
         throw std::invalid_argument("Predictions and targets must have the same shape for MSE loss calculation.");

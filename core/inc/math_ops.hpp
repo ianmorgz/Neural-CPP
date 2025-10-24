@@ -20,7 +20,7 @@ void tanh_derivative(Tensor& x);
 void softmax_derivative(Tensor& x);
 
 // loss functions
-float mean_squared_error(const Tensor& predictions, const Tensor& targets);
+float mse_loss(const Tensor& predictions, const Tensor& targets);
 Tensor mse_loss_derivative(const Tensor& predictions, const Tensor& targets);
 
 // basic utilities

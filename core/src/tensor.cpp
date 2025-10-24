@@ -1,4 +1,4 @@
-#include "inc/tensor.hpp"
+#include "../inc/tensor.hpp"
 #include <random>
 #include <stdexcept>
 
