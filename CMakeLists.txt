@@ -16,4 +16,6 @@ target_include_directories(lightweight_nn PUBLIC include)
 
 # Examples
 add_executable(xor_example core/examples/xor_example.cpp)
+add_executable(parity_example core/examples/parity_example.cpp)
 target_link_libraries(xor_example lightweight_nn)
+target_link_libraries(parity_example lightweight_nn)
