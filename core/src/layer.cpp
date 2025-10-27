@@ -5,17 +5,14 @@
 
 namespace neuralcpp {
 
-DenseLayer::DenseLayer(size_t input_size, size_t output_size, Activation activation )
+DenseLayer::DenseLayer(size_t input_size, size_t output_size, Activation activation, WeightInitialization weight_init, BiasInitialization bias_init)
 : weights_( {input_size, output_size} ), biases_( {output_size} ), activation_(activation)
 {
-    // Initialize weights using He normal initialization for ReLU and Xavier for others
-    if(activation == Activation::ReLU){
-        math::initialize_he_normal(weights_, input_size);
-    } else {
-        math::initialize_xavier(weights_, input_size, output_size);
-    }
-    // Initialize biases to zero
-    biases_.randomize(-0.1f, 0.1f);
+    // initialize_weights
+    initialize_weights(weight_init);
+
+    // initialize bias
+    initialize_bias(bias_init);
 }
 
 Tensor DenseLayer::forward(const Tensor& input) {
@@ -36,7 +33,7 @@ Tensor DenseLayer::forward(const Tensor& input) {
     }
 
     output_cache_ = output;
-    apply_activation(output); //TODO: implement apply_activation
+    apply_activation(output); 
 
     return output;
 }
@@ -136,6 +133,43 @@ void DenseLayer::apply_activation_derivative(Tensor& tensor) const {
             break;
         default:
             throw std::invalid_argument("Unknown activation function.");
+    }
+} 
+
+void DenseLayer::initialize_weights(WeightInitialization weight_init){
+    switch (weight_init){
+        case WeightInitialization::Zero:
+            math::initialize_weights_zero(weights_);
+            break;
+        case WeightInitialization::Xavier:
+            math::initialize_weights_xavier(weights_, weights_.shape()[0], weights_.shape()[1]);
+            break;
+        case WeightInitialization::XavierNormal:
+            math::initialize_weights_xavier_normal(weights_, weights_.shape()[0], weights_.shape()[1]);
+            break;
+        case WeightInitialization::HeUniform:
+            math::initialize_weights_he_uniform(weights_, weights_.shape()[0]);
+            break;
+        case WeightInitialization::HeNormal:
+            math::initialize_weights_he_normal(weights_, weights_.shape()[0]);
+            break;
+    }
+}
+
+void DenseLayer::initialize_bias(BiasInitialization bias_init){
+    switch (bias_init){
+        case BiasInitialization::Zero:
+            math::initialize_bias_zero(biases_);
+            break;
+        case BiasInitialization::Constant:
+            math::initialize_bias_constant(biases_, 0.0f);
+            break;
+        case BiasInitialization::Uniform:
+            math::initialize_bias_uniform(biases_, -0.1f, 0.1f);
+            break;
+        case BiasInitialization::SmartOutput:
+            math::initialize_bias_smart_output(biases_);
+            break;
     }
 }
 

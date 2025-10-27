@@ -13,6 +13,21 @@ enum class Activation {
     // Linear
 };
 
+enum class WeightInitialization {
+    Zero,
+    Xavier,
+    XavierNormal,
+    HeUniform,
+    HeNormal
+};
+
+enum class BiasInitialization {
+    Zero,
+    Constant,
+    Uniform,
+    SmartOutput  // Special case for output layers
+};
+
 class Layer{
 public:
     virtual ~Layer() = default;
@@ -35,14 +50,16 @@ private:
     Tensor output_cache_; // Cache output for use in backpropagation
     Activation activation_;
 
-    float activation_function(float x) const;
-    float activation_derivative(float x) const;
     void apply_activation(Tensor& tensor) const;
     void apply_activation_derivative(Tensor& tensor) const;
 
+    void initialize_weights(WeightInitialization weight_init);
+    void initialize_bias(BiasInitialization bias_init);
+
+
 public:
 
-    DenseLayer(size_t input_size, size_t output_size, Activation activation);
+    DenseLayer(size_t input_size, size_t output_size, Activation activation, WeightInitialization weight_init, BiasInitialization bias_init);
     Tensor forward(const Tensor& input) override;
     Tensor backward(const Tensor& grad_output, float learning_rate) override;
 

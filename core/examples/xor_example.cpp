@@ -22,7 +22,6 @@ int main(){
     // 1,0 -> 1
     // 1,1 -> 0
 
-
     std::vector<TrainingData> training_data = {
         {{0.0f, 0.0f}, {0.0f}},
         {{0.0f, 1.0f}, {1.0f}},
@@ -35,20 +34,21 @@ int main(){
 
     // add two layers:
     // the hidden layer: 
-    network->addLayer(neuralcpp::createDenseLayer(2, 4, neuralcpp::Activation::ReLU));
+    network->addLayer(neuralcpp::createDenseLayer(2, 8, neuralcpp::Activation::Tanh, neuralcpp::WeightInitialization::Xavier, neuralcpp::BiasInitialization::Uniform));
     // the output layer:
-    network->addLayer(neuralcpp::createDenseLayer(4, 1, neuralcpp::Activation::Sigmoid));
+    network->addLayer(neuralcpp::createDenseLayer(8, 1, neuralcpp::Activation::Sigmoid, neuralcpp::WeightInitialization::Xavier, neuralcpp::BiasInitialization::Uniform));
 
     std::cout << "Network created with 2 layers:\n";
     std::cout << "- Input: 2 neurons\n";
-    std::cout << "- Hidden: 4 neurons (ReLU)\n";
+    std::cout << "- Hidden: 8 neurons (Tanh)\n";
     std::cout << "- Output: 1 neuron (Sigmoid)\n";
     std::cout << "\nStarting training...\n";
 
     // training loop
-    const int epochs = 5000;
+    const int epochs = 10000;
     const float learning_rate = 0.1f;
     for(int epoch = 0; epoch < epochs; epoch++){
+        float current_learning_rate = learning_rate * (1.0f - (float)epoch / epochs);
         float total_loss = 0.0f;
         for(const auto& data : training_data){
             // prepare input tensor
@@ -74,24 +74,22 @@ int main(){
         if(epoch % 500 == 0){
             std::cout << "Epoch " << epoch << ", Loss: " << total_loss / training_data.size() << "\n";
         }
-
-        std::cout << "\nTraining completed!\n";
-        std::cout << "\nTesting the trained network:\n";
-
-        // Test the trained network
-        for (const auto& data : training_data) {
-            neuralcpp::Tensor input({2});
-            input[0] = data.input[0];
-            input[1] = data.input[1];
-            
-            auto output = network->forward(input);
-            
-            std::cout << "Input: [" << data.input[0] << ", " << data.input[1] << "] -> ";
-            std::cout << "Output: " << output[0] << " (expected: " << data.target[0] << ")\n";
-        }
-        
-        return 0;
     }
 
+    std::cout << "\nTraining completed!\n";
+    std::cout << "\nTesting the trained network:\n";
 
+    // Test the trained network
+    for (const auto& data : training_data) {
+        neuralcpp::Tensor input({2});
+        input[0] = data.input[0];
+        input[1] = data.input[1];
+        
+        auto output = network->forward(input);
+        
+        std::cout << "Input: [" << data.input[0] << ", " << data.input[1] << "] -> ";
+        std::cout << "Output: " << output[0] << " (expected: " << data.target[0] << ")\n";
+    }
+    
+    return 0;
 }

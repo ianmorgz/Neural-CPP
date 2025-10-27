@@ -142,25 +142,70 @@ Tensor mse_loss_derivative(const Tensor& predictions, const Tensor& targets){
     return result;
 }
 
-void initialize_he_normal(Tensor& tensor, size_t input_size){
-    std::default_random_engine generator;
-    float stddev = std::sqrt(2.0f / static_cast<float>(input_size));
-    std::normal_distribution<float> distribution(0.0f, stddev);
+void initialize_weights_zero(Tensor& tensor) {
+    tensor.fill(0.0f);
+}
 
-    for(size_t i = 0; i < tensor.size(); ++i){
+void initialize_weights_random_uniform(Tensor& tensor, float lower, float upper) {
+    std::default_random_engine generator;
+    std::uniform_real_distribution<float> distribution(lower, upper);
+
+    for(size_t i = 0; i < tensor.size(); i++){
         tensor[i] = distribution(generator);
     }
 }
 
-void initialize_xavier(Tensor& tensor, size_t input_size, size_t output_size) {
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    float limit = std::sqrt(6.0f / (input_size + output_size));
-    std::uniform_real_distribution<float> dis(-limit, limit);
-    
-    for (size_t i = 0; i < tensor.size(); ++i) {
-        tensor[i] = dis(gen);
+void initialize_weights_random_normal(Tensor& tensor, float mean, float stddev) {
+    std::default_random_engine generator;
+    std::normal_distribution<float> distribution(mean, stddev);
+
+    for(size_t i = 0; i < tensor.size(); i++){
+        tensor[i] = distribution(generator);
     }
+}
+
+void initialize_weights_xavier(Tensor& tensor, size_t input_size, size_t output_size) {
+    float limit = std::sqrt(6.0f / (input_size + output_size));
+    initialize_weights_random_uniform(tensor, -limit, limit);
+}
+
+void initialize_weights_xavier_normal(Tensor& tensor, size_t input_size, size_t output_size) {
+    float stddev = std::sqrt(2.0f / (input_size + output_size));
+    initialize_weights_random_normal(tensor, 0.0f, stddev);
+}
+
+void initialize_weights_he_uniform(Tensor& tensor, size_t input_size) {
+    float limit = std::sqrt(6.0f / input_size);
+    initialize_weights_random_uniform(tensor, -limit, limit);
+}
+
+void initialize_weights_he_normal(Tensor& tensor, size_t input_size) {
+    float stddev = std::sqrt(2.0f / input_size);
+    initialize_weights_random_normal(tensor, 0.0f, stddev);
+}
+
+// bias initialization functions
+void initialize_bias_zero(Tensor& tensor) {
+    tensor.fill(0.0f);
+}
+
+void initialize_bias_constant(Tensor& tensor, float value) {
+    tensor.fill(value);
+}
+
+void initialize_bias_uniform(Tensor& tensor, float lower, float upper) {
+    std::default_random_engine generator;
+    std::uniform_real_distribution<float> distribution(lower, upper);
+
+    for(size_t i = 0; i < tensor.size(); i++){
+        tensor[i] = distribution(generator);
+    }
+}
+
+void initialize_bias_smart_output(Tensor& tensor) {
+    // TODO initialize based on activation function
+    // For output layers, initializing biases to a small negative value can help
+    tensor.fill(-1.5f); // Example value; adjust based on activation function
 }
 
 } // namespace math

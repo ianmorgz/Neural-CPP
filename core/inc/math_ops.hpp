@@ -14,6 +14,7 @@ void sigmoid(Tensor& x);
 void tanh(Tensor& x);
 void softmax(Tensor& x);
 
+// activation function derivatives
 void relu_derivative(Tensor& x);
 void sigmoid_derivative(Tensor& x);
 void tanh_derivative(Tensor& x);
@@ -23,9 +24,20 @@ void softmax_derivative(Tensor& x);
 float mse_loss(const Tensor& predictions, const Tensor& targets);
 Tensor mse_loss_derivative(const Tensor& predictions, const Tensor& targets);
 
-// basic utilities
-void initialize_he_normal(Tensor& tensor, size_t input_size);
-void initialize_xavier(Tensor& tensor, size_t input_size, size_t output_size);
+// weight initialization functions
+void initialize_weights_zero(Tensor& tensor);
+void initialize_weights_xavier(Tensor& tensor, size_t input_size, size_t output_size);
+void initialize_weights_random_uniform(Tensor& tensor, float lower, float upper);
+void initialize_weights_random_normal(Tensor& tensor, float mean, float stddev);
+void initialize_weights_xavier_normal(Tensor& tensor, size_t input_size, size_t output_size);
+void initialize_weights_he_uniform(Tensor& tensor, size_t input_size);
+void initialize_weights_he_normal(Tensor& tensor, size_t input_size);
+
+// bias initialization functions
+void initialize_bias_zero(Tensor& tensor);
+void initialize_bias_constant(Tensor& tensor, float value);
+void initialize_bias_uniform(Tensor& tensor, float lower, float upper);
+void initialize_bias_smart_output(Tensor& tensor);
 
 } // namespace math
 } // namespace neuralcpp

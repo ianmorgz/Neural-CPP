@@ -69,8 +69,11 @@ std::unique_ptr<NeuralNetwork> createNeuralNetwork() {
 
 std::unique_ptr<DenseLayer> createDenseLayer(size_t input_size, 
                                               size_t output_size, 
-                                              Activation activation) {
-    return std::make_unique<DenseLayer>(input_size, output_size, activation);
+                                              Activation activation,
+                                              WeightInitialization weight_init,
+                                              BiasInitialization bias_init
+                                            ) {
+    return std::make_unique<DenseLayer>(input_size, output_size, activation, weight_init, bias_init);
 }
 
 } // namespace neuralcpp
