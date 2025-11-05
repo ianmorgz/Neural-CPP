@@ -1,4 +1,5 @@
 #include "../inc/tensor.hpp"
+#include "../inc/math_ops.hpp"
 #include <cmath>
 #include <random>
 #include <stdexcept>
@@ -66,6 +67,19 @@ void multiply(const Tensor& a, const Tensor& b, Tensor& out) {
     }
 }
 
+void normalize(Tensor& x, float lower, float upper){
+    float min_val = x[0];
+    float max_val = x[0];
+    for(size_t i = 1; i < x.size(); ++i){
+        if(x[i] < min_val) min_val = x[i];
+        if(x[i] > max_val) max_val = x[i];
+    }
+    float range = max_val - min_val;
+    for(size_t i = 0; i < x.size(); ++i){
+        x[i] = lower + (x[i] - min_val) * (upper - lower) / range;
+    }
+}
+
 
 // --- Activation Functions ---
 void relu(Tensor& x){
@@ -86,8 +100,24 @@ void tanh(Tensor& x){
     }
 }
 
+// https://eli.thegreenplace.net/2016/the-softmax-function-and-its-derivative/
 void softmax(Tensor& x){
-    throw std::runtime_error("Softmax derivative not implemented.");
+    float max_val = x[0];
+    for(size_t i = 1; i < x.size(); ++i){
+        if(x[i] > max_val){
+            max_val = x[i];
+        }
+    }
+
+    float sum = 0.0f;
+    for(size_t i = 0; i < x.size(); ++i){
+        x[i] = std::exp(x[i] - max_val); 
+        sum += x[i];
+    }
+
+    for(size_t i = 0; i < x.size(); ++i){
+        x[i] /= sum;
+    }
 }
 
 void relu_derivative(Tensor& x){
@@ -109,8 +139,27 @@ void tanh_derivative(Tensor& x){
     }
 }
 
-void softmax_derivative(Tensor& x){
-    throw std::runtime_error("Softmax derivative not implemented.");
+void softmax_derivative(Tensor& x) {
+    // First compute softmax values
+    float max_val = x[0];
+    for(size_t i = 1; i < x.size(); ++i) {
+        if(x[i] > max_val) max_val = x[i];
+    }
+
+    std::vector<float> softmax_values(x.size());
+    float sum = 0.0f;
+    for(size_t i = 0; i < x.size(); ++i) {
+        softmax_values[i] = std::exp(x[i] - max_val);
+        sum += softmax_values[i];
+    }
+    for(size_t i = 0; i < x.size(); ++i) {
+        softmax_values[i] /= sum;
+    }
+
+    // Compute derivative: Sⱼ(1 - Sⱼ) where j is the target class
+    for(size_t i = 0; i < x.size(); ++i) {
+        x[i] = softmax_values[i] * (1.0f - softmax_values[i]);
+    }
 }
 
 // --- loss functions ---
@@ -138,6 +187,37 @@ Tensor mse_loss_derivative(const Tensor& predictions, const Tensor& targets){
     for(size_t i = 0; i < predictions.size(); i++){
         result[i] = 2.0f * (predictions[i] - targets[i]) / static_cast<float>(predictions.size());
     }  
+
+    return result;
+}
+
+float cross_entropy_loss(const Tensor& predictions, const Tensor& targets) {
+    if (predictions.shape() != targets.shape()) {
+        throw std::invalid_argument("Predictions and targets must have the same shape for cross-entropy loss calculation.");
+    }
+
+    float loss = 0.0f;
+    for (size_t i = 0; i < predictions.size(); i++) {
+        // Adding a small epsilon to avoid log(0)
+        float pred = std::max(predictions[i], 1e-15f);
+        loss += -targets[i] * std::log(pred);
+    }
+
+    return loss / static_cast<float>(predictions.size());
+}
+
+Tensor cross_entropy_loss_derivative(const Tensor& predictions, const Tensor& targets) {
+    if (predictions.shape() != targets.shape()) {
+        throw std::invalid_argument("Predictions and targets must have the same shape for cross-entropy loss derivative calculation.");
+    }
+
+    Tensor result(predictions.shape());
+
+    for (size_t i = 0; i < predictions.size(); i++) {
+        // Adding a small epsilon to avoid division by zero
+        float pred = std::max(predictions[i], 1e-15f);
+        result[i] = -targets[i] / pred / static_cast<float>(predictions.size());
+    }
 
     return result;
 }

@@ -46,6 +46,7 @@ public:
     // --- Operations ---
     void fill(float value);
     void randomize(float lower=-1.0f, float upper=1.0f);
+    void normalize(float lower=0.0f, float upper=1.0f);
     Tensor flatten() const;
 };
 

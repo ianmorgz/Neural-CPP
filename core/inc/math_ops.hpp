@@ -7,6 +7,7 @@ namespace math {
 void matmul(const Tensor& a, const Tensor& b, Tensor& out);
 void add(const Tensor& a, const Tensor& b, Tensor& out);
 void multiply(const Tensor& a, const Tensor& b, Tensor& out);
+void normalize(Tensor& x, float lower=0.0f, float upper=1.0f);
 
 // activation functions
 void relu(Tensor& x);
@@ -23,6 +24,9 @@ void softmax_derivative(Tensor& x);
 // loss functions
 float mse_loss(const Tensor& predictions, const Tensor& targets);
 Tensor mse_loss_derivative(const Tensor& predictions, const Tensor& targets);
+
+float cross_entropy_loss(const Tensor& predictions, const Tensor& targets);
+Tensor cross_entropy_loss_derivative(const Tensor& predictions, const Tensor& targets);
 
 // weight initialization functions
 void initialize_weights_zero(Tensor& tensor);

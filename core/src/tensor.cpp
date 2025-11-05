@@ -1,4 +1,5 @@
 #include "../inc/tensor.hpp"
+#include "../inc/math_ops.hpp"
 #include <random>
 #include <stdexcept>
 
@@ -86,6 +87,10 @@ void Tensor::randomize(float lower, float upper) {
     for (float& val : data_) {
         val = dis(gen);
     }
+}
+
+void Tensor::normalize(float lower, float upper) {
+    math::normalize(*this, lower, upper);
 }
 
 Tensor Tensor::flatten() const {
