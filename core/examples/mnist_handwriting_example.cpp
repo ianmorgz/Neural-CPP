@@ -40,10 +40,8 @@ int main(){
     
 
     // indices for shuffling
-    std::vector<size_t> indices(samples.size());
+    std::vector<size_t> indices(samples.size()-10); // leave some out for quick validation
     for(size_t i = 0; i < indices.size(); ++i) indices[i] = i;
-
-    
 
 
     for(size_t e = 0; e < epochs; ++e){
@@ -69,13 +67,39 @@ int main(){
         std::cout << "Epoch " << (e+1) << " / " << epochs << ": avg loss = " << (epoch_loss / samples.size()) << std::endl;
     }
 
-    // save the trained model
-    try{
-        net->saveModel("mnist_model.bin");
-        std::cout << "Saved model to mnist_model.bin" << std::endl;
-    } catch(const std::exception& ex){
-        std::cerr << "Warning: failed to save model: " << ex.what() << std::endl;
+    for(int i = samples.size()-10; i < samples.size(); ++i){
+        const Sample& s = samples[i];
+        Tensor out = net->forward(s.input);
+
+        // find predicted class
+        size_t predicted = 0;
+        float max_val = out[0];
+        for(size_t j = 1; j < out.size(); ++j){
+            if(out[j] > max_val){
+                max_val = out[j];
+                predicted = j;
+            }
+        }
+
+        // find actual class
+        size_t actual = 0;
+        for(size_t j = 0; j < s.target.size(); ++j){
+            if(s.target[j] == 1.0f){
+                actual = j;
+                break;
+            }
+        }
+
+        std::cout << "Sample " << i << ": Predicted = " << predicted << ", Actual = " << actual << std::endl;
     }
+
+    // save the trained model
+    // try{
+    //     net->saveModel("mnist_model.bin");
+    //     std::cout << "Saved model to mnist_model.bin" << std::endl;
+    // } catch(const std::exception& ex){
+    //     std::cerr << "Warning: failed to save model: " << ex.what() << std::endl;
+    // }
 
     return 0;
 }
