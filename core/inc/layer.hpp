@@ -6,10 +6,10 @@
 namespace neuralcpp {
 
 enum class Activation {
-    ReLU,
-    Sigmoid,
-    Tanh,
-    Softmax,
+    ReLU = 0,
+    Sigmoid = 1,
+    Tanh = 2,
+    Softmax = 3,
     // Linear
 };
 
@@ -37,6 +37,7 @@ public:
 
     virtual const Tensor& get_weights() const = 0;
     virtual const Tensor& get_biases() const = 0;
+    virtual const int get_activation_type() const = 0;
 
     virtual void set_weights(const Tensor& weights) = 0;
     virtual void set_biases(const Tensor& biases) = 0;
@@ -65,6 +66,7 @@ public:
 
     const Tensor& get_weights() const override { return weights_; }
     const Tensor& get_biases() const override { return biases_; }
+    const int get_activation_type() const override { return static_cast<int>(activation_); }
 
     void set_weights(const Tensor& weights) override;
     void set_biases(const Tensor& biases) override;

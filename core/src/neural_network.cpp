@@ -39,14 +39,46 @@ void NeuralNetwork::saveModel(const std::string& filepath) const{
     if (!file) {
         throw std::runtime_error("Cannot open file for writing: " + filepath);
     }
+    try{
+        //save layer architecture info first
+        // first save number of layers
+        size_t num_layers = layers_.size();
+        file.write(reinterpret_cast<const char*>(&num_layers), sizeof(size_t));
 
-    size_t num_layers = layers_.size();
-    file.write(reinterpret_cast<const char*>(&num_layers), sizeof(size_t));
-    // TODO: Save number of layers
+        // now iterate through each layer
+        for(int i = 0; i < layers_.size(); ++i){
+            Layer& layer = *layers_[i];
+            const Tensor& weights = layer.get_weights();
+            const Tensor& biases = layer.get_biases();
+            int activation_type = layer.get_activation_type(); // assuming Layer has this method
 
+            // save activation type
+            file.write(reinterpret_cast<const char*>(&activation_type), sizeof(int));
 
-    // TODO: add full serialization of each layer's weights and biases
-    file.close();
+            // save the input and output sizes
+            size_t input_size = weights.shape()[0];
+            size_t output_size = weights.shape()[1];
+            file.write(reinterpret_cast<const char*>(&input_size), sizeof(size_t));
+            file.write(reinterpret_cast<const char*>(&output_size), sizeof(size_t));
+
+            // save weights data
+            for(size_t j = 0; j < weights.size(); ++j){
+                float weight_value = weights[j];
+                file.write(reinterpret_cast<const char*>(&weight_value), sizeof(float));
+            }
+
+            // save biases data
+            for(size_t j = 0; j < biases.size(); ++j){
+                float bias_value = biases[j];
+                file.write(reinterpret_cast<const char*>(&bias_value), sizeof(float));
+            }
+        }
+        
+        file.close();
+    }catch (const std::exception& e){
+        file.close();
+        throw;
+    }
 }
 
 void NeuralNetwork::loadModel(const std::string& filepath){
@@ -58,7 +90,41 @@ void NeuralNetwork::loadModel(const std::string& filepath){
     size_t num_layers = 0;
     file.read(reinterpret_cast<char*>(&num_layers), sizeof(size_t));
     layers_.clear();
-    // TODO add full deserialization of each layer's weights and biases
+    for(int i = 0; i < num_layers; i++){
+        // read activation type
+        int activation_type_int = 0;
+        file.read(reinterpret_cast<char*>(&activation_type_int), sizeof(int));
+        Activation activation_type = static_cast<Activation>(activation_type_int);
+
+        // read input and output sizes
+        size_t input_size = 0;
+        size_t output_size = 0;
+        file.read(reinterpret_cast<char*>(&input_size), sizeof(size_t));
+        file.read(reinterpret_cast<char*>(&output_size), sizeof(size_t));
+
+        // create a new DenseLayer with default initializations
+        auto layer = std::make_unique<DenseLayer>(input_size, output_size, activation_type, WeightInitialization::Xavier, BiasInitialization::Zero);
+
+        // read weights data
+        Tensor weights({input_size, output_size});
+        for(size_t j = 0; j < weights.size(); ++j){
+            float weight_value = 0.0f;
+            file.read(reinterpret_cast<char*>(&weight_value), sizeof(float));
+            weights[j] = weight_value;
+        }
+        layer->set_weights(weights);
+
+        // read biases data
+        Tensor biases({output_size});
+        for(size_t j = 0; j < biases.size(); ++j){
+            float bias_value = 0.0f;
+            file.read(reinterpret_cast<char*>(&bias_value), sizeof(float));
+            biases[j] = bias_value;
+        }
+        layer->set_biases(biases);
+
+        layers_.push_back(std::move(layer));
+    }
     file.close();
 }
 

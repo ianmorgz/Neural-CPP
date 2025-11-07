@@ -31,6 +31,7 @@ int main(){
     
     // create the neural network
     auto network = neuralcpp::createNeuralNetwork();
+    
 
     // add two layers:
     // the hidden layer: 
@@ -90,6 +91,25 @@ int main(){
         std::cout << "Input: [" << data.input[0] << ", " << data.input[1] << "] -> ";
         std::cout << "Output: " << output[0] << " (expected: " << data.target[0] << ")\n";
     }
+
+    // save the network and destroy it, then create a new one and load the saved model to verify save and load functions
+    network->saveModel("../networks/xor_model.nn");
+    network = nullptr; // destroy the network 
     
+    network = neuralcpp::createNeuralNetwork();
+    network->loadModel("../networks/xor_model.nn");
+    std::cout << "\n --- Testing the loaded network --- :\n";
+    
+    // Test the trained network
+    for (const auto& data : training_data) {
+        neuralcpp::Tensor input({2});
+        input[0] = data.input[0];
+        input[1] = data.input[1];
+        
+        auto output = network->forward(input);
+        
+        std::cout << "Input: [" << data.input[0] << ", " << data.input[1] << "] -> ";
+        std::cout << "Output: " << output[0] << " (expected: " << data.target[0] << ")\n";
+    }
     return 0;
 }

@@ -33,11 +33,9 @@ int main(){
     
     std::cout << "Starting training on MNIST dataset with " << samples.size() << " samples.\n";
 
-    const size_t epochs = 5;
+    const size_t epochs = 1;
     const float learning_rate = 0.01f;
     std::mt19937 rng(42);
-
-    
 
     // indices for shuffling
     std::vector<size_t> indices(samples.size()-10); // leave some out for quick validation
