@@ -25,7 +25,7 @@ Tensor DenseLayer::forward(const Tensor& input) {
     Tensor output({weights_.shape()[1]});
 
     for(size_t i = 0;i<output.shape()[0];i++){
-        float sum = biases_[1];
+        float sum = biases_[i]; // start with bias
         for(size_t j = 0;j < weights_.shape()[0];j++){
             sum += input[j] * weights_.at({j, i});
         }
