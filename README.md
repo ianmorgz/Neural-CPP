@@ -1,2 +1,2 @@
 # Neural C
-lightweight C/C++ neural network library
+lightweight C++ neural network library - C side coming soon...
