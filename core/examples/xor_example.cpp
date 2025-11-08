@@ -93,11 +93,11 @@ int main(){
     }
 
     // save the network and destroy it, then create a new one and load the saved model to verify save and load functions
-    network->saveModel("../networks/xor_model.nn");
+    network->saveModel("../models/xor_model.nn");
     network = nullptr; // destroy the network 
     
     network = neuralcpp::createNeuralNetwork();
-    network->loadModel("../networks/xor_model.nn");
+    network->loadModel("../models/xor_model.nn");
     std::cout << "\n --- Testing the loaded network --- :\n";
     
     // Test the trained network
