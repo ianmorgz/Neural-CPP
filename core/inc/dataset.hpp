@@ -14,21 +14,15 @@ struct Sample {
 class Dataset {
 public:
     // constructor
-    Dataset(std::string base_path)
-        : dataset_base_path_(base_path) {};
+    Dataset() = default;
 
-    void import_training_data(std::string images_filename, std::string label_filename);
-    void import_testing_data(std::string images_filename, std::string label_filename);
-    //TODO: redo this function to read from ubyte files directly
-
-    // Read-only accessors for loaded samples so examples and trainers can iterate over data
+    void import_mnist_data(std::string images_path, std::string labels_path, double train_split);
+    void import_loan_data(std::string data_path, double train_split);
+ 
     const std::vector<Sample>& getTrainingSamples() const { return training_dataset_; }
     const std::vector<Sample>& getTestingSamples() const { return testing_dataset_; }
 
 private:
-    int getHeaderValue(std::ifstream& file, uint16_t offset, uint16_t size);
-    // paths to the dataset files
-    std::string dataset_base_path_;
 
     // storage for the dataset samples
     std::vector<Sample> training_dataset_;

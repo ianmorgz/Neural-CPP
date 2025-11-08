@@ -16,8 +16,8 @@ int main(){
     using namespace neuralcpp;
 
     // adjust path if running from project root or build dir
-    Dataset dataset("../datasets/mnist_handwriting/ubyte/");
-    dataset.import_training_data("train-images.idx3-ubyte", "train-labels.idx1-ubyte");
+    Dataset dataset;
+    dataset.import_mnist_data("train-images.idx3-ubyte", "train-labels.idx1-ubyte", 0.8);
 
     const auto& samples = dataset.getTrainingSamples();
     if(samples.empty()){
