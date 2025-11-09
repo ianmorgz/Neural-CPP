@@ -88,7 +88,26 @@ private:
 };
 
 // ----- Factory Functions -----
+/**
+ * @brief Factor function to create an instance of the NeuralNetwork class.
+ * 
+ * @return A std::unique_ptr<NeuralNetwork> owning the created empty neural network.
+ */
 std::unique_ptr<NeuralNetwork> createNeuralNetwork();
+
+/**
+ * @brief Factory function to create a DenseLayer with specified parameters.
+ * 
+ * @param input_size The size of the input to the dense layer.
+ * @param output_size The size of the output from the dense layer.
+ * @param activation The activation function to use in the dense layer.
+ * @param weight_init The weight initialization strategy.
+ * @param bias_init The bias initialization strategy.
+ * 
+ * @return A std::unique_ptr<DenseLayer> owning the created dense layer.
+ * 
+ * @note Please make sure for layers input and output sizes to match surrounding layers.
+ */
 std::unique_ptr<DenseLayer> createDenseLayer(size_t input_size, size_t output_size, Activation activation, WeightInitialization weight_init, BiasInitialization bias_init);
 
 
