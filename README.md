@@ -6,6 +6,5 @@ My goal with Neurall-CPP is to optimize the training functions and interface, be
 
 # Documentation
 The following is the documentation for the library. Because of the continuous development of it, the documentation may not be up to date at any given moment but I will do my best to keep up with it.
-
-[TODO]: finish documentation
+see documentation [here](docs/NeuralNetwork.md)
 
