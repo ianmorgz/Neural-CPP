@@ -1,11 +1,18 @@
+/*
+--------------------------------------------------------------------------
+neural_network.cpp - Implementation of the NeuralNetwork class
+Where the core methods for forward and backward propagation are defined.
+--------------------------------------------------------------------------
+*/
+
 #include "../inc/neural_network.hpp"
 #include "../inc/math_ops.hpp"
 #include <fstream>
 #include <stdexcept>
 
-namespace neuralcpp{
+namespace neuralcpp {
 
-NeuralNetwork::NeuralNetwork() : layers_(), last_output_() {} //default constructor
+NeuralNetwork::NeuralNetwork() : layers_(), last_output_() {}
 
 void NeuralNetwork::addLayer(std::unique_ptr<Layer> layer){
     layers_.push_back(std::move(layer));
@@ -16,7 +23,7 @@ Tensor NeuralNetwork::forward(const Tensor& input){
     for(const auto& layer : layers_){
         current_input = layer->forward(current_input);
     }
-    last_output_ = current_input; // Cache the output for potential use
+    last_output_ = current_input;
     return current_input;
 }
 
@@ -86,6 +93,7 @@ void NeuralNetwork::loadModel(const std::string& filepath){
     if (!file) {
         throw std::runtime_error("Cannot open file for reading: " + filepath);
     }
+
 
     size_t num_layers = 0;
     file.read(reinterpret_cast<char*>(&num_layers), sizeof(size_t));
