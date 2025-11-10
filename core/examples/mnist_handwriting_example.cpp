@@ -124,7 +124,7 @@ int main(){
 
     // adjust path if running from project root or build dir
     MnistDataset dataset;
-    dataset.import_data("../datasets/mnist_handwriting/", 0.8);
+    dataset.import_data("../datasets/mnist_handwriting/", 1);
 
     const auto& samples = dataset.getTrainingSamples();
     if(samples.empty()){
@@ -140,7 +140,7 @@ int main(){
     
     std::cout << "Starting training on MNIST dataset with " << samples.size() << " samples.\n";
 
-    const size_t epochs = 1;
+    const size_t epochs = 5;
     const float learning_rate = 0.01f;
     std::mt19937 rng(42);
 
@@ -198,13 +198,7 @@ int main(){
         std::cout << "Sample " << i << ": Predicted = " << predicted << ", Actual = " << actual << std::endl;
     }
 
-    // save the trained model
-    // try{
-    //     net->saveModel("mnist_model.bin");
-    //     std::cout << "Saved model to mnist_model.bin" << std::endl;
-    // } catch(const std::exception& ex){
-    //     std::cerr << "Warning: failed to save model: " << ex.what() << std::endl;
-    // }
+    net->saveModel("../models/mnist_model.bin");
 
     return 0;
 }
